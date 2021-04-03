@@ -108,6 +108,11 @@ function(params) {
           for store in tq.config.stores
         ] +
         (
+          if tq.config.storeFileSD != '' then [
+            '--store.sd-files=%s' % tq.config.storeFileSD
+          ] else []
+        ) +
+        (
           if tq.config.externalPrefix != '' then [
             '--web.external-prefix=' + tq.config.externalPrefix,
           ] else []
