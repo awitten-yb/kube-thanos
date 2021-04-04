@@ -73,9 +73,18 @@ function(params) {
         '--data-dir=/var/thanos/store',
         '--grpc-address=0.0.0.0:%d' % ts.config.ports.grpc,
         '--http-address=0.0.0.0:%d' % ts.config.ports.http,
-        '--objstore.config=$(OBJSTORE_CONFIG)',
         '--ignore-deletion-marks-delay=' + ts.config.ignoreDeletionMarksDelay,
-      ] + (
+      ] + 
+      (
+        [if ts.config.objstoreFile then '--objstore.config=$(OBJSTORE_CONFIG)'
+         else 
+         '--objstore.config=type: s3
+         config:
+           endpoint: minio.test-shard.svc.cluster.local
+           access_key: $(AWS_ACCESS_KEY_ID)
+           secret_key: $(AWS_SECRET_ACCESS_KEY)']
+      ) +
+      (
         if std.length(ts.config.indexCache) > 0 then [
           '--index-cache.config=' + std.manifestYamlDoc(ts.config.indexCache),
         ] else []
